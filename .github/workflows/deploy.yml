@@ -23,11 +23,11 @@ jobs:
 
     - name: Compile C++ to WebAssembly
       run: |
-        emcc src/*.cpp -o index.html -s USE_GLFW=3 -s FULL_ES3=1 -DSHADER_DIR='"Shaders/"' --preload-file 
-Shaders
+        mkdir -p dist
+        emcc src/*.cpp -o dist/index.html -s USE_GLFW=3 -s FULL_ES3=1 -DSHADER_DIR='"Shaders/"' --preload-file Shaders
 
     - name: Push Build to GitHub Pages Branch
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: .
+        folder: dist
         branch: gh-pages
