@@ -28,9 +28,7 @@ void render_frame() {
     
         glDrawArrays(GL_LINE_LOOP, startingVertex, 4);
     }   
-     // If setting size in shader, OR use:
 
-    // Draw all vertices at once across the entire lattice
     glDrawArrays(GL_POINTS, 0, totalSquares * 4);
     
     glfwSwapBuffers(window);
@@ -77,13 +75,6 @@ int main(int argc, const char * argv[]) {
             vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE);
         }
     
-    float vertices1[] = {
-        0.0f, 0.0f,
-        0.0f, 0.1f,
-        0.1f, 0.0f,
-        0.1f, 0.1f
-    };
-    
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -104,16 +95,13 @@ int main(int argc, const char * argv[]) {
     shaderProgram = shader.initializeShader("330 core");
     #endif
 
-#ifdef __EMSCRIPTEN__
-    // For the web: Hand control over to the browser. 
-    // Passing 0 FPS defaults to the browser's requestAnimationFrame matching display refresh.
+    #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(render_frame, 0, 1);
-#else
-    // For your desktop: Run the traditional rendering loop.
+#   else
     while (!glfwWindowShouldClose(window)) {
         render_frame();
     }
-#endif
+    #endif
     
     glfwTerminate();
     return 0;
