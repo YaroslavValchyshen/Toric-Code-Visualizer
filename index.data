@@ -1,10 +1,10 @@
-#version 330 core
+#version 300 es
 out vec4 FragColor;
 
 void main(){
     FragColor = vec4(1.0f, 0.8f, 0.2f, 1.0f);
 }
-#version 330 core
+#version 300 es
 layout (location = 0) in vec2 aPos;
 
 void main(){
