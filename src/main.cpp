@@ -43,7 +43,10 @@ int main(int argc, const char * argv[]) {
     }
     
     glfwMakeContextCurrent(window);
+    #ifndef __EMSCRIPTEN__
     glewInit();
+    #endif
+    
     
     float vertices[] = {
         -0.5f, -0.5f,
