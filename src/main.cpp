@@ -1,4 +1,8 @@
-#include <GL/glew.h>
+#ifdef __EMSCRIPTEN__
+#include <GLES3/gl3.h> // WebGL 2 headers for the web
+#else
+#include <GL/glew.h>   // GLEW headers for your desktop Mac build
+#endif
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.hpp"
