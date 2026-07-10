@@ -21,14 +21,14 @@ unsigned int shaderProgram = 0;
 void render_frame() {
     glUseProgram(shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
+
     const size_t totalSquares = 9 * 9;
     for (int s = 0; s < totalSquares; s++) {
         int startingVertex = s * 4;
     
         glDrawArrays(GL_LINE_LOOP, startingVertex, 4);
     }   
-    //glEnable(GL_PROGRAM_POINT_SIZE); // If setting size in shader, OR use:
-    glPointSize(14.0f);               // Quick global point size setting
+     // If setting size in shader, OR use:
 
     // Draw all vertices at once across the entire lattice
     glDrawArrays(GL_POINTS, 0, totalSquares * 4);
