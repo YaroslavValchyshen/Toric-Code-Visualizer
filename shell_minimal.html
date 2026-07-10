@@ -4,12 +4,21 @@
     <meta charset="utf-8">
     <title>My App</title>
     <style>
-        body { margin: 0; background-color: black; overflow: hidden; }
+        body { margin: 0; background-color: #111; overflow: hidden; }
         canvas { width: 100vw; height: 100vh; display: block; }
     </style>
 </head>
 <body>
+    <!-- The canvas must have id="canvas" -->
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+    <script type='text/javascript'>
+        // This connects Emscripten's WebGL context to our HTML canvas element
+        var Module = {
+            canvas: (function() { return document.getElementById('canvas'); })()
+        };
+    </script>
+    
     {{{ SCRIPT }}}
 </body>
 </html>
