@@ -9,7 +9,6 @@ std::string FileManager::readFile(std::string fileName){
         content += currentLine + "\n";
     }
     file.close();
-    std::cout << content;
     
     return content;
     

@@ -16,10 +16,11 @@ class Shader
 {
 private:
     std::string shaderPath;
+    std::string changeVersion(std::string shaderContext, std::string version);
 public:
     Shader(std::string shaderPath){
         this->shaderPath = shaderPath;
     }
-    unsigned int initializeShader();
+    unsigned int initializeShader(std::string version = "330 core");
     unsigned int createShader(char* source, GLuint shaderType);
 };

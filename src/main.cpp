@@ -5,6 +5,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <vector>
 #include "Shader.hpp"
 #include "FileManager.hpp"
 
@@ -12,15 +13,25 @@
 #include <emscripten.h>
 #endif
 
-// Global pointers so the rendering function can access them
+
 GLFWwindow* window = nullptr;
 unsigned int shaderProgram = 0;
 
-// This function renders a single frame
+
 void render_frame() {
     glUseProgram(shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    const size_t totalSquares = 9 * 9;
+    for (int s = 0; s < totalSquares; s++) {
+        int startingVertex = s * 4;
+    
+        glDrawArrays(GL_LINE_LOOP, startingVertex, 4);
+    }   
+    //glEnable(GL_PROGRAM_POINT_SIZE); // If setting size in shader, OR use:
+    glPointSize(14.0f);               // Quick global point size setting
+
+    // Draw all vertices at once across the entire lattice
+    glDrawArrays(GL_POINTS, 0, totalSquares * 4);
     
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -47,11 +58,30 @@ int main(int argc, const char * argv[]) {
     glewInit();
     #endif
     
+    const size_t latticeDimension = 9;
+    const float LATTICE_SCALE = 0.1f;
+    std::vector<float> vertices;
+    for(int i = 0; i < latticeDimension; i++)
+        for(int j = 0; j < latticeDimension; j++)
+        {
+            vertices.push_back(0.0f + i * LATTICE_SCALE);
+            vertices.push_back(0.0f + j * LATTICE_SCALE);
+        
+            vertices.push_back(LATTICE_SCALE + i * LATTICE_SCALE);
+            vertices.push_back(0.0f + j * LATTICE_SCALE);
+        
+            vertices.push_back(LATTICE_SCALE + i * LATTICE_SCALE);
+            vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE);
+        
+            vertices.push_back(0.0f + i * 0.1f);
+            vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE);
+        }
     
-    float vertices[] = {
-        -0.5f, -0.5f,
-        0.5f, -0.5f,
-        0.0f,  0.5f
+    float vertices1[] = {
+        0.0f, 0.0f,
+        0.0f, 0.1f,
+        0.1f, 0.0f,
+        0.1f, 0.1f
     };
     
     unsigned int VAO;
@@ -61,13 +91,18 @@ int main(int argc, const char * argv[]) {
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
     
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
     Shader shader(SHADER_DIR);
-    shaderProgram = shader.initializeShader();
+
+    #ifdef __EMSCRIPTEN__
+    shaderProgram = shader.initializeShader("300 es");
+    #else 
+    shaderProgram = shader.initializeShader("330 core");
+    #endif
 
 #ifdef __EMSCRIPTEN__
     // For the web: Hand control over to the browser. 
