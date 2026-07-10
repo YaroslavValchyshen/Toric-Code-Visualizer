@@ -19,18 +19,24 @@ unsigned int shaderProgram = 0;
 
 
 void render_frame() {
+    const size_t totalSquares = 9 * 9;
     glUseProgram(shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
+    #ifndef __EMSCRIPTEN__
+    glEnable(GL_PROGRAM_POINT_SIZE); 
+    #endif
 
-    const size_t totalSquares = 9 * 9;
+    
+
+    glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 1.0, 0.0, 1.0);
+    
     for (int s = 0; s < totalSquares; s++) {
         int startingVertex = s * 4;
     
         glDrawArrays(GL_LINE_LOOP, startingVertex, 4);
     }   
-
+    glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 0.0, 1.0, 1.0);
     glDrawArrays(GL_POINTS, 0, totalSquares * 4);
-    
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -57,22 +63,26 @@ int main(int argc, const char * argv[]) {
     #endif
     
     const size_t latticeDimension = 9;
-    const float LATTICE_SCALE = 0.1f;
+    const float LATTICE_SCALE = 0.2f;
     std::vector<float> vertices;
+
+    float ORIGIN_X = -0.5f;
+    float ORIGIN_Y = -0.5f;
+
     for(int i = 0; i < latticeDimension; i++)
         for(int j = 0; j < latticeDimension; j++)
         {
-            vertices.push_back(0.0f + i * LATTICE_SCALE);
-            vertices.push_back(0.0f + j * LATTICE_SCALE);
+            vertices.push_back(0.0f + i * LATTICE_SCALE + ORIGIN_X);
+            vertices.push_back(0.0f + j * LATTICE_SCALE + ORIGIN_Y);
         
-            vertices.push_back(LATTICE_SCALE + i * LATTICE_SCALE);
-            vertices.push_back(0.0f + j * LATTICE_SCALE);
+            vertices.push_back(LATTICE_SCALE + i * LATTICE_SCALE + ORIGIN_X);
+            vertices.push_back(0.0f + j * LATTICE_SCALE + ORIGIN_Y);
         
-            vertices.push_back(LATTICE_SCALE + i * LATTICE_SCALE);
-            vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE);
+            vertices.push_back(LATTICE_SCALE + i * LATTICE_SCALE + ORIGIN_X);
+            vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE + ORIGIN_Y);
         
-            vertices.push_back(0.0f + i * 0.1f);
-            vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE);
+            vertices.push_back(0.0f + i * LATTICE_SCALE + ORIGIN_X);
+            vertices.push_back(LATTICE_SCALE + j * LATTICE_SCALE + ORIGIN_Y);
         }
     
     unsigned int VAO;
@@ -88,6 +98,10 @@ int main(int argc, const char * argv[]) {
     glEnableVertexAttribArray(0);
 
     Shader shader(SHADER_DIR);
+    #ifndef __EMSCRIPTEN__
+    glEnable(GL_PROGRAM_POINT_SIZE); 
+    #endif
+
 
     #ifdef __EMSCRIPTEN__
     shaderProgram = shader.initializeShader("300 es");
@@ -97,7 +111,7 @@ int main(int argc, const char * argv[]) {
 
     #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(render_frame, 0, 1);
-#   else
+    #else
     while (!glfwWindowShouldClose(window)) {
         render_frame();
     }
