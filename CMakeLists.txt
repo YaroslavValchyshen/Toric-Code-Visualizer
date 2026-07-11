@@ -26,10 +26,10 @@ add_executable(ToricCode
 target_compile_definitions(ToricCode PRIVATE GL_SILENCE_DEPRECATION)
 target_compile_definitions(ToricCode PRIVATE SHADER_DIR="${CMAKE_BINARY_DIR}/Shaders/")
 
-target_include_directories(ToricCode PRIVATE
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src
-)
+
+target_include_directories(ToricCode PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+
 
 target_link_libraries(ToricCode PRIVATE
     OpenGL::GL

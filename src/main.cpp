@@ -8,6 +8,10 @@
 #include <vector>
 #include "Shader.hpp"
 #include "FileManager.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -16,6 +20,11 @@
 
 GLFWwindow* window = nullptr;
 unsigned int shaderProgram = 0;
+glm::mat4 model = glm::mat4(1.0f);
+float objectX = 0;
+float objectY = 0;
+float moveSpeed = 0.005f;
+
 
 
 void render_frame() {
@@ -25,9 +34,22 @@ void render_frame() {
     #ifndef __EMSCRIPTEN__
     glEnable(GL_PROGRAM_POINT_SIZE); 
     #endif
-
-    
-
+    objectX = 0;
+    objectY = 0;
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        objectX += moveSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        objectX -= moveSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        objectY -= moveSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        objectY += moveSpeed;
+    }
+    model = glm::translate(model, glm::vec3(objectX, objectY, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "u_MVP"), 1, GL_FALSE, glm::value_ptr(model));
     glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 1.0, 0.0, 1.0);
     
     for (int s = 0; s < totalSquares; s++) {
@@ -65,7 +87,7 @@ int main(int argc, const char * argv[]) {
     const size_t latticeDimension = 9;
     const float LATTICE_SCALE = 0.2f;
     std::vector<float> vertices;
-
+    
     float ORIGIN_X = -0.5f;
     float ORIGIN_Y = -0.5f;
 
