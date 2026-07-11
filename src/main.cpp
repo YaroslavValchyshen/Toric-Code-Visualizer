@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include "Shader.hpp"
+#include "Camera.hpp"
 #include "FileManager.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,36 +21,22 @@
 
 GLFWwindow* window = nullptr;
 unsigned int shaderProgram = 0;
-glm::mat4 model = glm::mat4(1.0f);
 float objectX = 0;
 float objectY = 0;
 float moveSpeed = 0.005f;
 
 
 
-void render_frame() {
+void render_frame(Camera* camera) {
     const size_t totalSquares = 9 * 9;
     glUseProgram(shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
     #ifndef __EMSCRIPTEN__
     glEnable(GL_PROGRAM_POINT_SIZE); 
     #endif
-    objectX = 0;
-    objectY = 0;
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        objectX += moveSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        objectX -= moveSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        objectY -= moveSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        objectY += moveSpeed;
-    }
-    model = glm::translate(model, glm::vec3(objectX, objectY, 0.0f));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "u_MVP"), 1, GL_FALSE, glm::value_ptr(model));
+    camera->update(window);
+
+    
     glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 1.0, 0.0, 1.0);
     
     for (int s = 0; s < totalSquares; s++) {
@@ -84,6 +71,8 @@ int main(int argc, const char * argv[]) {
     glewInit();
     #endif
     
+    
+
     const size_t latticeDimension = 9;
     const float LATTICE_SCALE = 0.2f;
     std::vector<float> vertices;
@@ -110,7 +99,6 @@ int main(int argc, const char * argv[]) {
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -130,12 +118,12 @@ int main(int argc, const char * argv[]) {
     #else 
     shaderProgram = shader.initializeShader("330 core");
     #endif
-
+    Camera* camera = new Camera(shaderProgram, 0.01f);
     #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(render_frame, 0, 1);
     #else
     while (!glfwWindowShouldClose(window)) {
-        render_frame();
+        render_frame(camera);
     }
     #endif
     
