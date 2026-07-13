@@ -31,20 +31,21 @@ void render_frame(Camera* camera) {
     const size_t totalSquares = 9 * 9;
     glUseProgram(shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
     #ifndef __EMSCRIPTEN__
     glEnable(GL_PROGRAM_POINT_SIZE); 
     #endif
     camera->update(window);
 
     
-    glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 1.0, 0.0, 1.0);
+    glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 0.0, 0.0, 1.0);
     
     for (int s = 0; s < totalSquares; s++) {
         int startingVertex = s * 4;
     
         glDrawArrays(GL_LINE_LOOP, startingVertex, 4);
     }   
-    glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.0, 0.0, 1.0, 1.0);
+    glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 0.5, 0.5, 1.0, 1.0);
     glDrawArrays(GL_POINTS, 0, totalSquares * 4);
     glfwSwapBuffers(window);
     glfwPollEvents();
