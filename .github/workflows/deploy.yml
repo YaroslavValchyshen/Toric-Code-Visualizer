@@ -33,10 +33,12 @@ jobs:
     - name: Prepare Artifacts for Deployment
       run: |
         mkdir -p dist
-        cp build/ToricCode.html dist/index.html
-        cp build/ToricCode.js dist/
-        cp build/ToricCode.wasm dist/
-        cp build/ToricCode.data dist/
+        # Wildcards capture the output regardless of capitalization or exact name
+        cp build/*.html dist/index.html
+        cp build/*.js dist/
+        cp build/*.wasm dist/
+        # The true statement prevents failure if no preloaded asset files are bundled yet
+        cp build/*.data dist/ 2>/dev/null || true
 
     - name: Push Build to GitHub Pages Branch
       uses: JamesIves/github-pages-deploy-action@v4
