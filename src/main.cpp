@@ -95,7 +95,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     }
 }
 
-void render_frame(Camera* camera) {
+void render_frame(void* arg) {
+    Camera* camera = static_cast<Camera*>(arg);
+
     const size_t totalSquares = latticeDimension * latticeDimension;
     glUseProgram(shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -249,7 +251,7 @@ int main(int argc, const char * argv[]) {
     #endif
     camera = new Camera(shaderProgram, 0.01f, WINDOW_WIDTH, WINDOW_HEIGHT);
     #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(render_frame, 0, 1);
+    emscripten_set_main_loop_arg(render_frame, &camera, 0, 1);
     #else
     while (!glfwWindowShouldClose(window)) {
         render_frame(camera);
