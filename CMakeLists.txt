@@ -5,6 +5,7 @@ project(ToricCode LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 # --- OpenGL ---
 find_package(OpenGL REQUIRED)
 
@@ -28,6 +29,9 @@ target_compile_definitions(ToricCode PRIVATE SHADER_DIR="${CMAKE_BINARY_DIR}/Sha
 
 
 target_include_directories(ToricCode PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+target_include_directories(ToricCode PRIVATE "/Users/yaroslavvalchyshen/Desktop/Study/BardCollege/Research/SeniorThesis/ToricCodeProject/glm")
+
 
 
 
