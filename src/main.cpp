@@ -20,11 +20,6 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#ifdef __EMSCRIPTEN__
-    #include <GLES3/gl3.h>   // Required for WebGL2 / WebAssembly compilation
-#else
-    #include <GL/glew.h>     // Used for your local Mac desktop build
-#endif
 
 
 GLFWwindow* window = nullptr;
