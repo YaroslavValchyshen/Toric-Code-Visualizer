@@ -23,17 +23,15 @@ target_include_directories(ToricCode PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 # HYBRID BUILD: Detects if compiling with Emscripten (Web) vs Desktop
 # -------------------------------------------------------------------
 if(EMSCRIPTEN)
-    # WEB BUILD (Emscripten Settings)
-    target_include_directories(ToricCode PRIVATE "/Users/yaroslavvalchyshen/Desktop/Study/BardCollege/Research/SeniorThesis/ToricCodeProject")
-    target_compile_options(ToricCode PRIVATE "-sUSE_GLFW=3" "-sUSE_GLEW=1" "-sUSE_GLM=1")
-    target_link_libraries(ToricCode PRIVATE "-sUSE_GLFW=3" "-sUSE_GLEW=1" "-sUSE_GLM=1")
+    # WEB BUILD (Emscripten automatically handles GLEW stubs internally)
+    target_compile_options(ToricCode PRIVATE "-sUSE_GLFW=3" "-sUSE_GLM=1")
+    target_link_libraries(ToricCode PRIVATE "-sUSE_GLFW=3" "-sUSE_GLM=1")
 else()
     # DESKTOP BUILD (Your original working Mac settings)
     find_package(OpenGL REQUIRED)
     find_package(GLEW REQUIRED)
     find_package(glfw3 REQUIRED)
 
-    # Re-adds your local GLM path for local compilation
     target_include_directories(ToricCode PRIVATE "/Users/yaroslavvalchyshen/Desktop/Study/BardCollege/Research/SeniorThesis/ToricCodeProject")
 
     target_link_libraries(ToricCode PRIVATE
