@@ -21,10 +21,22 @@ jobs:
       with:
         version: 'latest'
 
-    - name: Compile C++ to WebAssembly
+    - name: Configure Project with CMake
+      run: |
+        emcmake cmake -B build \
+          -DCMAKE_EXE_LINKER_FLAGS="-s FULL_ES3=1 --preload-file Shaders --shell-file ../shell_minimal.html" \
+          -DCMAKE_EXECUTABLE_SUFFIX=".html"
+
+    - name: Build Project
+      run: cmake --build build
+
+    - name: Prepare Artifacts for Deployment
       run: |
         mkdir -p dist
-        emcc src/*.cpp -o dist/index.html -s USE_GLFW=3 -s FULL_ES3=1 -DSHADER_DIR='"Shaders/"' --preload-file Shaders --shell-file shell_minimal.html
+        cp build/ToricCode.html dist/index.html
+        cp build/ToricCode.js dist/
+        cp build/ToricCode.wasm dist/
+        cp build/ToricCode.data dist/
 
     - name: Push Build to GitHub Pages Branch
       uses: JamesIves/github-pages-deploy-action@v4
