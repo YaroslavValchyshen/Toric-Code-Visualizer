@@ -24,8 +24,7 @@ jobs:
     - name: Configure Project with CMake
       run: |
         emcmake cmake -B build \
-          -DCMAKE_EXE_LINKER_FLAGS="-s FULL_ES3=1 --preload-file Shaders --shell-file ../shell_minimal.html" \
-          -DCMAKE_EXECUTABLE_SUFFIX=".html"
+          -DCMAKE_EXE_LINKER_FLAGS="-s FULL_ES3=1 --preload-file Shaders --shell-file ../shell_minimal.html"
 
     - name: Build Project
       run: cmake --build build
@@ -33,12 +32,10 @@ jobs:
     - name: Prepare Artifacts for Deployment
       run: |
         mkdir -p dist
-        # Wildcards capture the output regardless of capitalization or exact name
-        cp build/*.html dist/index.html
-        cp build/*.js dist/
-        cp build/*.wasm dist/
-        # The true statement prevents failure if no preloaded asset files are bundled yet
-        cp build/*.data dist/ 2>/dev/null || true
+        cp build/ToricCode.html dist/index.html
+        cp build/ToricCode.js dist/
+        cp build/ToricCode.wasm dist/
+        cp build/ToricCode.data dist/ 2>/dev/null || true
 
     - name: Push Build to GitHub Pages Branch
       uses: JamesIves/github-pages-deploy-action@v4
