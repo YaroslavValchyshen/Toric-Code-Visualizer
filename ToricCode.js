@@ -76,149 +76,6 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /tmp/tmp02ii6anp.js
-
-  if (!Module['expectedDataFileDownloads']) Module['expectedDataFileDownloads'] = 0;
-  Module['expectedDataFileDownloads']++;
-  (() => {
-    // Do not attempt to redownload the virtual filesystem data when in a pthread or a Wasm Worker context.
-    var isPthread = typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD;
-    var isWasmWorker = typeof ENVIRONMENT_IS_WASM_WORKER != 'undefined' && ENVIRONMENT_IS_WASM_WORKER;
-    if (isPthread || isWasmWorker) return;
-    var isNode = globalThis.process && globalThis.process.versions && globalThis.process.versions.node && globalThis.process.type != 'renderer';
-    async function loadPackage(metadata) {
-
-      var PACKAGE_PATH = '';
-      if (typeof window === 'object') {
-        PACKAGE_PATH = window['encodeURIComponent'](window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/');
-      } else if (typeof process === 'undefined' && typeof location !== 'undefined') {
-        // web worker
-        PACKAGE_PATH = encodeURIComponent(location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/');
-      }
-      var PACKAGE_NAME = 'ToricCode.data';
-      var REMOTE_PACKAGE_BASE = 'ToricCode.data';
-      var REMOTE_PACKAGE_NAME = Module['locateFile'] ? Module['locateFile'](REMOTE_PACKAGE_BASE, '') : REMOTE_PACKAGE_BASE;
-      var REMOTE_PACKAGE_SIZE = metadata['remote_package_size'];
-
-      async function fetchRemotePackage(packageName, packageSize) {
-        if (isNode) {
-          var contents = require('fs').readFileSync(packageName);
-          return new Uint8Array(contents).buffer;
-        }
-        if (!Module['dataFileDownloads']) Module['dataFileDownloads'] = {};
-        try {
-          var response = await fetch(packageName);
-        } catch (e) {
-          throw new Error(`Network Error: ${packageName}`, {e});
-        }
-        if (!response.ok) {
-          throw new Error(`${response.status}: ${response.url}`);
-        }
-
-        const chunks = [];
-        const headers = response.headers;
-        const total = Number(headers.get('Content-Length') || packageSize);
-        let loaded = 0;
-
-        Module['setStatus'] && Module['setStatus']('Downloading data...');
-        const reader = response.body.getReader();
-
-        while (1) {
-          var {done, value} = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          loaded += value.length;
-          Module['dataFileDownloads'][packageName] = {loaded, total};
-
-          let totalLoaded = 0;
-          let totalSize = 0;
-
-          for (const download of Object.values(Module['dataFileDownloads'])) {
-            totalLoaded += download.loaded;
-            totalSize += download.total;
-          }
-
-          Module['setStatus'] && Module['setStatus'](`Downloading data... (${totalLoaded}/${totalSize})`);
-        }
-
-        const packageData = new Uint8Array(chunks.map((c) => c.length).reduce((a, b) => a + b, 0));
-        let offset = 0;
-        for (const chunk of chunks) {
-          packageData.set(chunk, offset);
-          offset += chunk.length;
-        }
-        return packageData.buffer;
-      }
-
-      var fetchPromise;
-      var fetched = Module['getPreloadedPackage'] && Module['getPreloadedPackage'](REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE);
-
-      if (!fetched) {
-        // Note that we don't use await here because we want to execute the
-        // the rest of this function immediately.
-        fetchPromise = fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE);
-      }
-
-    async function runWithFS(Module) {
-
-      function assert(check, msg) {
-        if (!check) throw new Error(msg);
-      }
-Module['FS_createPath']("/", "Shaders", true, true);
-
-      async function processPackageData(arrayBuffer) {
-        assert(arrayBuffer, 'Loading data file failed.');
-        assert(arrayBuffer.constructor.name === ArrayBuffer.name, 'bad input to processPackageData ' + arrayBuffer.constructor.name);
-        var byteArray = new Uint8Array(arrayBuffer);
-        var curr;
-        // Reuse the bytearray from the XHR as the source for file reads.
-          for (var file of metadata['files']) {
-            var name = file['filename'];
-            var data = byteArray.subarray(file['start'], file['end']);
-            // canOwn this data in the filesystem, it is a slice into the heap that will never change
-        Module['FS_createDataFile'](name, null, data, true, true, true);
-          }
-          Module['removeRunDependency']('datafile_ToricCode.data');
-      }
-      Module['addRunDependency']('datafile_ToricCode.data');
-
-      if (!Module['preloadResults']) Module['preloadResults'] = {};
-
-      Module['preloadResults'][PACKAGE_NAME] = {fromCache: false};
-      if (!fetched) {
-        fetched = await fetchPromise;
-      }
-      await processPackageData(fetched);
-
-    }
-    // Detect whether the module JS file has already been loaded.
-    if (Module['FS_createPath']) {
-      runWithFS(Module);
-    } else {
-      if (!Module['preRun']) Module['preRun'] = [];
-      Module['preRun'].push(runWithFS); // FS is not initialized yet, wait for it
-    }
-
-    }
-    loadPackage({"files": [{"filename": "/Shaders/fragment.frag", "start": 0, "end": 127}, {"filename": "/Shaders/vertex.vert", "start": 127, "end": 303}], "remote_package_size": 303});
-
-  })();
-
-// end include: /tmp/tmp02ii6anp.js
-// include: /tmp/tmp48v09f64.js
-
-    // All the pre-js content up to here must remain later on, we need to run
-    // it.
-    if ((typeof ENVIRONMENT_IS_WASM_WORKER != 'undefined' && ENVIRONMENT_IS_WASM_WORKER) || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD) || (typeof ENVIRONMENT_IS_AUDIO_WORKLET != 'undefined' && ENVIRONMENT_IS_AUDIO_WORKLET)) Module['preRun'] = [];
-    var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: /tmp/tmp48v09f64.js
-// include: /tmp/tmprf1mza4u.js
-
-    if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
-    necessaryPreJSTasks.forEach((task) => {
-      if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
-    });
-  // end include: /tmp/tmprf1mza4u.js
 
 
 var programArgs = [];
@@ -4061,6 +3918,25 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
 
   var __abort_js = () =>
       abort('native code called abort()');
+
+  
+  
+  
+  
+  var __emscripten_fs_load_embedded_files = (ptr) => {
+      do {
+        var name_addr = HEAPU32[((ptr)>>2)];
+        ptr += 4;
+        var len = HEAPU32[((ptr)>>2)];
+        ptr += 4;
+        var content = HEAPU32[((ptr)>>2)];
+        ptr += 4;
+        var name = UTF8ToString(name_addr)
+        FS.createPath('/', PATH.dirname(name), true, true);
+        // canOwn this data in the filesystem, it is a slice of wasm memory that will never change
+        FS.createDataFile(name, null, HEAP8.subarray(content, content + len), true, true, /*canOwn=*/true);
+      } while (HEAPU32[((ptr)>>2)]);
+    };
 
   
   var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
@@ -7960,6 +7836,8 @@ var wasmImports = {
   __syscall_openat: ___syscall_openat,
   /** @export */
   _abort_js: __abort_js,
+  /** @export */
+  _emscripten_fs_load_embedded_files: __emscripten_fs_load_embedded_files,
   /** @export */
   _tzset_js: __tzset_js,
   /** @export */
