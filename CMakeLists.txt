@@ -27,8 +27,17 @@ if(EMSCRIPTEN)
     # FORCES CMake to generate an HTML bundle (fixes the missing *.html error)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
+    # Emscripten compiler settings
     target_compile_options(ToricCode PRIVATE "-sUSE_GLFW=3")
-    target_link_libraries(ToricCode PRIVATE "-sUSE_GLFW=3")
+    
+    # Emscripten linker settings (maps desktop OpenGL/GLEW to WebGL 2)
+    target_link_options(ToricCode PRIVATE
+        "-sUSE_GLFW=3"
+        "-sUSE_GLEW=1"
+        "-sUSE_WEBGL2=1"
+        "-sFULL_ES3=1"
+        "-sALLOW_MEMORY_GROWTH=1"
+    )
 else()
     # DESKTOP BUILD (Your original local Mac configuration)
     find_package(OpenGL REQUIRED)
