@@ -14,7 +14,8 @@ namespace {
 	const LineStyle& styleForState(LineState state) {
 		static const LineStyle styles[] = {
 			{ glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.0015f },  // LineState::Normal
-			{ glm::vec4(1.0f, 0.25f, 0.1f, 1.0f), 0.006f },  // LineState::Highlighted (4x thicker)
+			{ glm::vec4(1.0f, 0.25f, 0.1f, 1.0f), 0.006f },  // LineState::ZErrorlighted (4x thicker)
+			{ glm::vec4(0.0f, 0.01f, 1.0f, 0.0f), 0.006f},
 		};
 		return styles[static_cast<int>(state)];
 	}
@@ -26,7 +27,11 @@ void Line::setState(LineState newState) {
 }
 
 void Line::toggleHighlight() {
-	setState(state == LineState::Normal ? LineState::Highlighted : LineState::Normal);
+	setState(state == LineState::Normal ? LineState::ZError : LineState::Normal);
+}
+
+void Line::toggleXError(){
+	setState(state == LineState::Normal ? LineState::XError : LineState::Normal);
 }
 
 LineState Line::getState() const {

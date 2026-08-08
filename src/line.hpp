@@ -7,7 +7,8 @@
 // style table in Line.cpp -- nothing else about the call sites changes.
 enum class LineState {
 	Normal = 0,
-	Highlighted = 1
+	ZError = 1,
+	XError = 2
 };
 
 // A Line only knows what state it is in. Color and width are never set
@@ -23,6 +24,7 @@ public:
 	void setState(LineState newState);
 	// Convenience for the common click->toggle interaction.
 	void toggleHighlight();
+	void toggleXError();
 
 	LineState getState() const;
 	glm::vec4 getColor() const;

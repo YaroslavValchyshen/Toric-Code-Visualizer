@@ -43,6 +43,8 @@ Camera* camera;
 // be to an edge for that edge to count as clicked.
 const float CLICK_THRESHOLD = 0.02f;
 
+bool isXError = false;
+
 // Lines are rendered as filled quads rather than GL_LINES, because
 // glLineWidth is clamped to 1px by many drivers (and always on WebGL2,
 // which this project also targets) regardless of the value requested.
@@ -90,7 +92,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     RaycastHit hit = Raycasting::findClosestLine(lineEndpoints, worldPos, CLICK_THRESHOLD);
 
     if (hit.lineIndex != -1) {
-        lines[hit.lineIndex].toggleHighlight();
+        std::cout << "Is X Error: " << isXError << std::endl;
+        if(!isXError) lines[hit.lineIndex].toggleHighlight();
+        else lines[hit.lineIndex].toggleXError();
         rebuildLineQuad(hit.lineIndex);
     }
 }
@@ -106,6 +110,12 @@ void render_frame(void* arg) {
     glEnable(GL_PROGRAM_POINT_SIZE); 
     #endif
     camera->update(window);
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        isXError = false;
+    }
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+        isXError = true;
+    }
 
     int colorLocation = glGetUniformLocation(shaderProgram, "u_color");
 
@@ -134,7 +144,7 @@ int main(int argc, const char * argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Toric Code Visualization", NULL, NULL);
     
     if (!window) {
         glfwTerminate();
