@@ -1279,7 +1279,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
             } catch (e) {
               throw new FS.ErrnoError(29);
             }
-            if (result === undefined && bytesRead === 0) {
+            if (result === undefined && !bytesRead) {
               throw new FS.ErrnoError(6);
             }
             if (result === null || result === undefined) break;
@@ -1600,10 +1600,10 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           node.mtime = node.ctime = Date.now();
   
           if (canOwn) {
-            assert(position === 0, 'canOwn must imply no weird position inside the file');
+            assert(!position, 'canOwn must imply no weird position inside the file');
             node.contents = buffer.subarray(offset, offset + length);
             node.usedBytes = length;
-          } else if (node.usedBytes === 0 && position === 0) { // If this is a simple first write to an empty file, do a fast set since we don't need to care about old data.
+          } else if (!node.usedBytes && !position) { // If this is a simple first write to an empty file, do a fast set since we don't need to care about old data.
             node.contents = buffer.slice(offset, offset + length);
             node.usedBytes = length;
           } else {
@@ -1891,7 +1891,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       assert(id, 'addRunDependency requires an ID')
       assert(!runDependencyTracking[id]);
       runDependencyTracking[id] = 1;
-      if (runDependencyWatcher === null && globalThis.setInterval) {
+      if (!runDependencyWatcher && globalThis.setInterval) {
         // Check for missing dependencies every few seconds
         runDependencyWatcher = setInterval(() => {
           if (ABORT) {
@@ -3146,8 +3146,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         // to write to file opened in read-only mode with MAP_PRIVATE flag,
         // as all modifications will be visible only in the memory of
         // the current process.
-        if ((prot & 2) !== 0
-            && (flags & 2) === 0
+        if ((prot & 2)
+            && !(flags & 2)
             && (stream.flags & 2097155) !== 2) {
           throw new FS.ErrnoError(2);
         }
@@ -3240,7 +3240,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         // use a buffer to avoid overhead of individual crypto calls per byte
         var randomBuffer = new Uint8Array(1024), randomLeft = 0;
         var randomByte = () => {
-          if (randomLeft === 0) {
+          if (!randomLeft) {
             randomFill(randomBuffer);
             randomLeft = randomBuffer.byteLength;
           }
@@ -3456,7 +3456,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
               } catch (e) {
                 throw new FS.ErrnoError(29);
               }
-              if (result === undefined && bytesRead === 0) {
+              if (result === undefined && !bytesRead) {
                 throw new FS.ErrnoError(6);
               }
               if (result === null || result === undefined) break;
@@ -4274,7 +4274,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
   fakeRequestAnimationFrame(func) {
         // try to keep 60fps between calls to here
         var now = Date.now();
-        if (MainLoop.nextRAF === 0) {
+        if (!MainLoop.nextRAF) {
           MainLoop.nextRAF = now + 1000/60;
         } else {
           while (now + 2 >= MainLoop.nextRAF) { // fudge a little, to avoid timer jitter causing us to do lots of delay:0
@@ -4540,7 +4540,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       var stream = SYSCALLS.getStreamFromFD(fd);
       FS.llseek(stream, offset, whence);
       HEAP64[((newOffset)>>3)] = BigInt(stream.position);
-      if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
+      if (stream.getdents && !offset && whence === 0) stream.getdents = null; // reset readdir state
       return 0;
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
@@ -4781,7 +4781,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       },
   MAX_TEMP_BUFFER_SIZE:2097152,
   numTempVertexBuffersPerSize:64,
-  log2ceilLookup:(i) => 32 - Math.clz32(i === 0 ? 0 : i - 1),
+  log2ceilLookup:(i) => 32 - Math.clz32(i ? i - 1 : 0),
   generateTempBuffers:(quads, context) => {
         var largestIndex = GL.log2ceilLookup(GL.MAX_TEMP_BUFFER_SIZE);
         context.tempVertexBufferCounters1 = [];
@@ -5613,8 +5613,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
                 var ret = '';
                 var leftchar = 0;
                 var leftbits = 0;
-                for (var i = 0; i < data.length; i++) {
-                  leftchar = (leftchar << 8) | data[i];
+                for (var byte of data) {
+                  leftchar = (leftchar << 8) | byte;
                   leftbits += 8;
                   while (leftbits >= 6) {
                     var curr = (leftchar >> (leftbits-6)) & 0x3f;
