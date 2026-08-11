@@ -28,9 +28,12 @@ public:
 
 	LineState getState() const;
 	glm::vec4 getColor() const;
-	// Half-width, in the same world units as the lattice vertices. Used to
-	// build the quad that renders this line (see rebuildLineQuad() in
-	// main.cpp) -- NOT a glLineWidth value, since many drivers (and WebGL2
-	// always) clamp glLineWidth to 1px regardless of what's requested.
+	// Half-width, in the same world units as the lattice vertices. NOT a
+	// glLineWidth value, since many drivers (and WebGL2 always) clamp
+	// glLineWidth to 1px regardless of what's requested -- so both views
+	// build real geometry from this instead. See FlatRenderer::syncEdges()
+	// for the flat quads, and TorusRenderer::syncEdges() for the curved
+	// ribbons (which scale this by EDGE_WIDTH_SCALE, the torus being much
+	// larger in world units than the flat lattice).
 	float getWidth() const;
 };

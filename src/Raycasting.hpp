@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include "GraphicsAPI.hpp"
 #include <glm/glm.hpp>
 #include <vector>
 #include <cstddef>

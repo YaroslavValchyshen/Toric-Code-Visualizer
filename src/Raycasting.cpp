@@ -42,6 +42,7 @@ RaycastHit Raycasting::findClosestLine(const std::vector<glm::vec2>& lineEndpoin
 }
 
 void Raycasting::raycast(glm::vec3 origin) {
+    (void)origin;
     // Reserved for future 3D raycasting use; the 2D lattice picking above
     // (findClosestLine) is what drives line selection today.
 }

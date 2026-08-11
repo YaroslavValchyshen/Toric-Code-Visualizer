@@ -9,7 +9,9 @@ Camera::Camera(unsigned int shaderProgram, float moveSpeed, float windowWidth, f
 
 	this->model = glm::mat4(1.0f);
     this->view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight, -1.0f, 1.0f);
+    // NOTE: this was `glm::mat4 projection = ...`, a local that shadowed the
+    // member and left Camera::projection uninitialized.
+    this->projection = glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight, -1.0f, 1.0f);
 }
 
 void Camera::update(GLFWwindow* window){
